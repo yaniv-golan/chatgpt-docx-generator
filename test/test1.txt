@@ -1,0 +1,475 @@
+# ContractsML Specification Document
+
+## Version 1.0
+## Date: 2024-05-18
+
+---
+
+## Table of Contents
+
+1. Introduction
+2. Core Principles
+3. ContractsML Schema
+    1. Metadata
+    2. Parties
+    3. Clauses
+    4. Signatures
+4. Customization with Extensions
+5. Namespaced Extensions
+6. Handling Specific Instances
+7. Example: SAFE Agreement
+8. Redlining Support
+9. Conclusion
+
+---
+
+## 1. Introduction
+
+ContractsML is an XML-based language designed for defining, managing, and processing contracts and agreements. It aims to provide a standardized format for representing legal documents that can be easily parsed, validated, and manipulated by software tools.
+
+## 2. Core Principles
+
+- **Clarity**: Each element has a clear and specific purpose.
+- **Modularity**: Support for reusable components and templates.
+- **Extensibility**: Ability to extend the base schema with additional elements.
+- **Machine Readability**: Structured format for easy processing by software tools.
+- **Human Readability**: Elements are named to be understandable by humans.
+
+## 3. ContractsML Schema
+
+### 3.1 Metadata
+
+The metadata section contains information about the contract, such as the title, version, and creation date.
+
+```xml
+<metadata>
+    <title>Simple Agreement for Future Equity (SAFE)</title>
+    <version>1.0</version>
+    <dateCreated>2024-05-18</dateCreated>
+</metadata>
+```
+
+### 3.2 Parties
+
+Defines the parties involved in the contract, each with a unique ID, name, and role.
+
+```xml
+<parties>
+    <party id="issuer">
+        <name>Issuer Placeholder</name>
+        <role>Issuer</role>
+    </party>
+    <party id="investor">
+        <name>Investor Placeholder</name>
+        <role>Investor</role>
+    </party>
+</parties>
+```
+
+### 3.3 Clauses
+
+Defines the clauses of the contract, categorized by type. Each clause has an ID, title, and content.
+
+#### Clause Types
+
+1. **Definition Clauses**:
+    - These clauses define specific terms used throughout the contract.
+    - Example: "Company means Startup XYZ."
+
+```xml
+<clause id="1" type="definition">
+    <title>Defined Terms</title>
+    <definition>
+        <content>
+            <term>Company</term> means <ref id="issuer">Issuer Placeholder</ref>.
+        </content>
+    </definition>
+</clause>
+```
+
+2. **Obligation Clauses**:
+    - These clauses specify the duties and responsibilities of the parties involved.
+    - Example: "The investor agrees to invest $100,000."
+
+```xml
+<clause id="2" type="obligation">
+    <title>Purchase Amount</title>
+    <obligation>
+        <content>The <ref id="investor">Investor Placeholder</ref> agrees to invest $[AMOUNT] in the <ref id="issuer">Issuer Placeholder</ref>.</content>
+    </obligation>
+</clause>
+```
+
+3. **Condition Clauses**:
+    - These clauses specify conditions under which certain actions are to be taken.
+    - Example: "If Milestone 1 is achieved, the investor will release an additional $50,000 investment."
+
+```xml
+<clause id="4" type="condition">
+    <title>Milestone Achievement</title>
+    <condition>
+        <if>
+            <event>Milestone 1 is achieved</event>
+        </if>
+        <then>
+            <action>Investor ABC will release an additional $50,000 investment</action>
+        </then>
+    </condition>
+</clause>
+```
+
+4. **Representations and Warranties Clauses**:
+    - These clauses contain statements of fact made by one party to induce the other party to enter into the contract.
+    - Example: "The company represents that it is duly incorporated and in good standing."
+
+```xml
+<clause id="3" type="representation">
+    <title>Representations and Warranties</title>
+    <representation>
+        <content>The <ref id="issuer">Issuer Placeholder</ref> represents that it is duly incorporated and in good standing.</content>
+    </representation>
+</clause>
+```
+
+5. **Termination Clauses**:
+    - These clauses specify the conditions under which the contract may be terminated.
+    - Example: "This agreement may be terminated by either party with 30 days' notice."
+
+```xml
+<clause id="5" type="termination">
+    <title>Termination</title>
+    <termination>
+        <content>This agreement may be terminated by either party with 30 days' notice.</content>
+    </termination>
+</clause>
+```
+
+6. **Miscellaneous Clauses**:
+    - These clauses cover various other provisions that do not fit into the above categories.
+    - Example: "This agreement shall be governed by the laws of the state of Delaware."
+
+```xml
+<clause id="6" type="miscellaneous">
+    <title>Governing Law</title>
+    <miscellaneous>
+        <content>This agreement shall be governed by the laws of the state of Delaware.</content>
+    </miscellaneous>
+</clause>
+```
+
+### 3.4 Signatures
+
+Defines the electronic signatures of the parties, including the method and timestamp.
+
+```xml
+<signatures>
+    <signature id="issuer_sig" partyRef="issuer">
+        <name>Issuer Signature</name>
+        <date>2024-05-18</date>
+        <method>electronic</method>
+        <electronicSignature>
+            <hash>issuer_hash_placeholder</hash>
+            <timestamp>2024-05-18T14:53:00Z</timestamp>
+        </electronicSignature>
+    </signature>
+    <signature id="investor_sig" partyRef="investor">
+        <name>Investor Signature</name>
+        <date>2024-05-18</date>
+        <method>electronic</method>
+        <electronicSignature>
+            <hash>investor_hash_placeholder</hash>
+            <timestamp>2024-05-18T14:54:00Z</timestamp>
+        </electronicSignature>
+    </signature>
+</signatures>
+```
+
+## 4. Customization with Extensions
+
+ContractsML allows for adding custom clauses and extending the base template using extension points.
+
+```xml
+<customClauses>
+    <clause id="4" type="condition">
+        <title>Milestone Achievement</title>
+        <condition>
+            <if>
+                <event>Milestone 1 is achieved</event>
+            </if>
+            <then>
+                <action>Investor ABC will release additional $50,000 investment</action>
+            </then>
+        </condition>
+    </clause>
+</customClauses>
+```
+
+## 5. Namespaced Extensions
+
+ContractsML supports namespaced extensions to allow for domain-specific customizations. Each namespace can introduce new elements or attributes that extend the base schema.
+
+```xml
+<safe xmlns="http://example.com/safe" xmlns:custom="http://example.com/custom">
+    <!-- Base elements here -->
+    <custom:additionalClause>
+        <title>Additional Clause</title>
+        <content>Custom content goes here.</content>
+    </custom:additionalClause>
+</safe>
+```
+
+## 6. Handling Specific Instances
+
+Specific instances of contracts can include, override, or extend the base template using XML inclusion mechanisms such as XInclude. This allows for the reuse of common elements and the customization of specific details.
+
+### Example Specific SAFE Instance
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<safe xmlns="http://example.com/safe" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="generic_safe.xml"/>
+
+    <metadata>
+        <title>SAFE for Startup XYZ</title>
+        <version>1.0</version>
+        <dateCreated>2024-05-18</dateCreated>
+    </metadata>
+
+    <parties>
+        <party id="issuer">
+            <name>Startup XYZ</name>
+            <role>Issuer</role>
+        </party>
+        <party id="investor">
+            <name>Investor ABC</name>
+            <role>Investor</role>
+        </party>
+    </parties>
+
+    <clauses>
+        <!-- Customize clauses here -->
+        <customClauses>
+            <clause id="4" type="condition">
+                <title>Milestone Achievement</title>
+                <condition>
+                    <if>
+                        <event>Milestone 1 is achieved</event>
+                    </if>
+                    <then>
+                        <action>Investor ABC will release additional $50,000 investment</action>
+                    </then>
+                </condition>
+            </clause>
+        </customClauses>
+    </clauses>
+
+    <signatures>
+        <signature id="issuer_sig" partyRef="issuer">
+            <name>Startup XYZ</name>
+            <date>2024-05-18</date>
+            <method>electronic</method>
+            <electronicSignature>
+                <hash>issuer_hash_specific</hash>
+                <timestamp>2024-05-18T14:53:00Z</timestamp>
+            </electronicSignature>
+        </signature>
+        <signature id="investor_sig" partyRef="investor">
+            <name>Investor ABC</name>
+            <date>2024-05-18</date>
+            <method>electronic</method>
+            <elect
+
+ronicSignature>
+                <hash>investor_hash_specific</hash>
+                <timestamp>2024-05-18T14:54:00Z</timestamp>
+            </electronicSignature>
+        </signature>
+    </signatures>
+</safe>
+```
+
+## 7. Example: SAFE Agreement
+
+### Generic SAFE Definition
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<safe xmlns="http://example.com/safe">
+    <metadata>
+        <title>Simple Agreement for Future Equity (SAFE)</title>
+        <version>1.0</version>
+        <dateCreated>2024-05-18</dateCreated>
+    </metadata>
+
+    <parties>
+        <party id="issuer">
+            <name>Issuer Placeholder</name>
+            <role>Issuer</role>
+        </party>
+        <party id="investor">
+            <name>Investor Placeholder</name>
+            <role>Investor</role>
+        </party>
+    </parties>
+
+    <clauses>
+        <clause id="1" type="definition">
+            <title>Defined Terms</title>
+            <definition>
+                <content>
+                    <term>Company</term> means <ref id="issuer">Issuer Placeholder</ref>.
+                </content>
+            </definition>
+        </clause>
+        <clause id="2" type="obligation">
+            <title>Purchase Amount</title>
+            <obligation>
+                <content>The <ref id="investor">Investor Placeholder</ref> agrees to invest $[AMOUNT] in the <ref id="issuer">Issuer Placeholder</ref>.</content>
+            </obligation>
+        </clause>
+        <clause id="3" type="representation">
+            <title>Representations and Warranties</title>
+            <representation>
+                <content>The <ref id="issuer">Issuer Placeholder</ref> represents that it is duly incorporated and in good standing.</content>
+            </representation>
+        </clause>
+        <clause id="4" type="condition">
+            <title>Milestone Achievement</title>
+            <condition>
+                <if>
+                    <event>Milestone 1 is achieved</event>
+                </if>
+                <then>
+                    <action>Investor ABC will release an additional $50,000 investment</action>
+                </then>
+            </condition>
+        </clause>
+        <clause id="5" type="termination">
+            <title>Termination</title>
+            <termination>
+                <content>This agreement may be terminated by either party with 30 days' notice.</content>
+            </termination>
+        </clause>
+        <clause id="6" type="miscellaneous">
+            <title>Governing Law</title>
+            <miscellaneous>
+                <content>This agreement shall be governed by the laws of the state of Delaware.</content>
+            </miscellaneous>
+        </clause>
+    </clauses>
+
+    <signatures>
+        <signature id="issuer_sig" partyRef="issuer">
+            <name>Issuer Signature</name>
+            <date>2024-05-18</date>
+            <method>electronic</method>
+            <electronicSignature>
+                <hash>issuer_hash_placeholder</hash>
+                <timestamp>2024-05-18T14:53:00Z</timestamp>
+            </electronicSignature>
+        </signature>
+        <signature id="investor_sig" partyRef="investor">
+            <name>Investor Signature</name>
+            <date>2024-05-18</date>
+            <method>electronic</method>
+            <electronicSignature>
+                <hash>investor_hash_placeholder</hash>
+                <timestamp>2024-05-18T14:54:00Z</timestamp>
+            </electronicSignature>
+        </signature>
+    </signatures>
+</safe>
+```
+
+### Specific SAFE Instance
+
+```xml
+<safe xmlns="http://example.com/safe" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="generic_safe.xml"/>
+
+    <metadata>
+        <title>SAFE for Startup XYZ</title>
+        <version>1.0</version>
+        <dateCreated>2024-05-18</dateCreated>
+    </metadata>
+
+    <parties>
+        <party id="issuer">
+            <name>Startup XYZ</name>
+            <role>Issuer</role>
+        </party>
+        <party id="investor">
+            <name>Investor ABC</name>
+            <role>Investor</role>
+        </party>
+    </parties>
+
+    <clauses>
+        <!-- Customize clauses here -->
+        <customClauses>
+            <clause id="4" type="condition">
+                <title>Milestone Achievement</title>
+                <condition>
+                    <if>
+                        <event>Milestone 1 is achieved</event>
+                    </if>
+                    <then>
+                        <action>Investor ABC will release an additional $50,000 investment</action>
+                    </then>
+                </condition>
+            </clause>
+        </customClauses>
+    </clauses>
+
+    <signatures>
+        <signature id="issuer_sig" partyRef="issuer">
+            <name>Startup XYZ</name>
+            <date>2024-05-18</date>
+            <method>electronic</method>
+            <electronicSignature>
+                <hash>issuer_hash_specific</hash>
+                <timestamp>2024-05-18T14:53:00Z</timestamp>
+            </electronicSignature>
+        </signature>
+        <signature id="investor_sig" partyRef="investor">
+            <name>Investor ABC</name>
+            <date>2024-05-18</date>
+            <method>electronic</method>
+            <electronicSignature>
+                <hash>investor_hash_specific</hash>
+                <timestamp>2024-05-18T14:54:00Z</timestamp>
+            </electronicSignature>
+        </signature>
+    </signatures>
+</safe>
+```
+
+## 8. Redlining Support
+
+Redlining allows for tracking changes, additions, and deletions to the contract. Each change includes information about the author, authentication method, and reason for the change.
+
+### Redline Example
+
+```xml
+<redline:add xmlns:redline="http://example.com/redline" author="John Doe" userId="12345" authMethod="2fa" authDetails="OTP via SMS" timestamp="2024-05-18T15:00:00Z" reason="Clarification">
+    Added text here
+</redline:add>
+```
+
+### Enhanced Author Identification
+
+To ensure robust identity verification, additional elements or attributes can be included:
+
+```xml
+<redline:add xmlns:redline="http://example.com/redline" author="John Doe" userId="12345" authMethod="cert" timestamp="2024-05-18T15:00:00Z" reason="Clarification">
+    <digitalSignature>
+        <certificate>MIICdzCC... (Base64-encoded certificate)</certificate>
+        <signature>MEUCIQ... (Base64-encoded signature)</signature>
+    </digitalSignature>
+    Added text here
+</redline:add>
+```
+
+## 9. Conclusion
+
+ContractsML provides a comprehensive, extensible framework for representing contracts and agreements in a structured, machine-readable format. By supporting namespaced extensions, redlining, and electronic signatures, ContractsML ensures flexibility, verifiability, and robust identity management, making it a powerful tool for modern contract management and processing.
